@@ -14,7 +14,7 @@ redis_host = '127.0.0.1'
 redis_port = 6379
 # Redis 的数据库索引
 redis_db = 0
-# 数据库密码
+# 数据库密码，可空
 redis_password = ''
 
 r = redis.Redis(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
