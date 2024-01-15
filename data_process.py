@@ -7,7 +7,7 @@ from config import r
 
 
 # 获取站点和页面 PV
-def get_pv(host, path):
+def get_pv(host, path, ip):
     # 增加指定键的值，增加后的数值
     page_pv = r.incr("page_pv:%s:%s" % (host, path))
     # page_pv 不设置过期
@@ -15,7 +15,13 @@ def get_pv(host, path):
     site_pv = r.incr("site_pv:%s" % host)
     # 设置 site_pv 过期时间 30 天
     r.expire("site_pv:%s" % host, 60 * 60 * 24 * 30)
-    return page_pv, site_pv
+
+    # 记录页面 UV ,不设置过期
+    r.sadd("page_uv:%s:%s" % (host, path), ip)
+    # 获取页面 UV
+    page_uv = r.scard("page_uv:%s:%s" % (host, path))
+
+    return page_pv, site_pv, page_uv
 
 
 # 统计进站 IP 并返回独立 IP 数，即 UV
