@@ -37,14 +37,15 @@ def root(request: Request,
     else:
         past_site_uv = int(past_site_uv.decode())
     # 增加当前 UV 值并调用 record_and_count_visitors 方法统计数据
-    uv = record_and_count_visitors(host, client_host) + past_site_uv
+    site_uv = record_and_count_visitors(host, client_host) + past_site_uv
     # 调用 get_pv 方法获取页面 PV 和站点 PV
-    page_pv, site_pv = get_pv(host, path)
+    page_pv, site_pv, page_uv = get_pv(host, path, client_host)
     # 构造返回的数据
     dict_data = {
-        "site_uv": uv,
+        "site_uv": site_uv,
         "page_pv": page_pv,
         "site_pv": site_pv,
+        "page_uv": page_uv,
         "version": 2.4
     }
     # 构造 JSONP 格式的字符串数据
@@ -55,13 +56,6 @@ def root(request: Request,
 
 
 if __name__ == "__main__":
-    """
-        更改调用系统的或Docker的Redis命令
-        print("chmod redis")
-        subprocess.run(chmod_redis, shell=True)
-        print("start redis")
-        subprocess.Popen(start_redis, shell=True)
-    """
     print("The Redis service is changed to use system or Docker commands.")
     print("start uvicorn")
     uvicorn.run("main:app", host="0.0.0.0", port=server_port, log_level="info", proxy_headers=True, forwarded_allow_ips="*")
